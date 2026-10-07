@@ -1,6 +1,7 @@
 import sdsparse from "./deno.json" with { type: "json" };
 import { Command } from "@cliffy/command";
 import { extractPdfText } from "./src/pdf/extract.ts";
+import { parseSds } from "./src/sds/parse.ts";
 
 const command = new Command()
   .name("sdsparse")
@@ -8,14 +9,9 @@ const command = new Command()
   .description("Parse Safety Data Sheets.")
   .arguments("<input:string>")
   .action(async (_options, input) => {
-    await extractPdfText(await Deno.readFile(input)).then((pages) => {
-      for (const page of pages) {
-        console.log(`Page ${page.pageNumber}:`);
-        console.log(page.text);
-        console.log("\n");
-        Deno.exit(0);
-      }
-    });
+    const pages = await extractPdfText(await Deno.readFile(input));
+    const sds = parseSds(pages);
+    console.log(JSON.stringify(sds, null, 2));
   });
 
 await command.parse();
