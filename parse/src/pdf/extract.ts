@@ -5,7 +5,9 @@ export interface PdfPageText {
   text: string;
 }
 
-export async function extractPdfText(data: Uint8Array): Promise<PdfPageText[]> {
+export async function extractPdfText(
+  data: Uint8Array,
+): Promise<PdfPageText[]> {
   const document = await pdfjsLib.getDocument({
     data,
     useSystemFonts: true,
@@ -18,8 +20,8 @@ export async function extractPdfText(data: Uint8Array): Promise<PdfPageText[]> {
     const content = await page.getTextContent();
 
     const text = content.items
-      .map((item) => "str" in item ? item.str : "")
-      .join(" ");
+      .map((item) => "str" in item ? item.str + (item.hasEOL ? "\n" : "") : "")
+      .join("");
 
     pages.push({ pageNumber, text });
   }

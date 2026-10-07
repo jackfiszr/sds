@@ -13,6 +13,7 @@ const command = new Command()
         console.log(`Page ${page.pageNumber}:`);
         console.log(page.text);
         console.log("\n");
+        Deno.exit(0);
       }
     });
   });
