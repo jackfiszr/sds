@@ -2,16 +2,100 @@ import sdsparse from "./deno.json" with { type: "json" };
 import { Command } from "@cliffy/command";
 import { extractPdfText } from "./src/pdf/extract.ts";
 import { parseSds } from "./src/sds/parse.ts";
+import { getPdfFiles } from "./src/input.ts";
+import {
+  OUTPUT_FORMATS,
+  type OutputFormat,
+  type SdsResult,
+} from "./src/output/formats/mod.ts";
+import { writeOutput } from "./src/output/write.ts";
 
-const command = new Command()
-  .name("sdsparse")
-  .version(sdsparse.version)
-  .description("Parse Safety Data Sheets.")
-  .arguments("<input:string>")
-  .action(async (_options, input) => {
-    const pages = await extractPdfText(await Deno.readFile(input));
-    const sds = parseSds(pages);
-    console.log(JSON.stringify(sds, null, 2));
-  });
+async function main(): Promise<void> {
+  const command = new Command()
+    .name("sdsparse")
+    .version(sdsparse.version)
+    .description("Parse Safety Data Sheets.")
+    .option(
+      "--json",
+      "Output JSON.",
+      {
+        conflicts: ["csv", "xlsx"],
+      },
+    )
+    .option(
+      "--csv",
+      "Write CSV output. Domyślna nazwa: sdsparse.csv.",
+      {
+        conflicts: ["json", "xlsx"],
+      },
+    )
+    .option(
+      "--xlsx",
+      "Write XLSX output. Domyślna nazwa: sdsparse.xlsx.",
+      {
+        conflicts: ["json", "csv"],
+      },
+    )
+    .option(
+      "-o, --output <file:file>",
+      "Nazwa pliku wyjściowego. Rozszerzenie zostanie dodane automatycznie.",
+    )
+    .arguments("[input:file]")
+    .action(async (options, input) => {
+      const inputPath = input ?? ".";
+      const format = getOutputFormat(options);
+      const files = await getPdfFiles(inputPath);
+      const results: SdsResult[] = [];
 
-await command.parse();
+      for (const file of files) {
+        try {
+          console.error(`Parsowanie: ${file}`);
+
+          const pages = await extractPdfText(await Deno.readFile(file));
+          const sds = parseSds(pages);
+
+          results.push({
+            file,
+            ...sds,
+          });
+        } catch (error) {
+          const message = error instanceof Error
+            ? error.message
+            : String(error);
+
+          console.error(`Błąd: ${file}: ${message}`);
+        }
+      }
+
+      if (results.length === 0) {
+        throw new Error(
+          "Nie udało się sparsować żadnego pliku PDF.",
+        );
+      }
+
+      await writeOutput(results, format);
+    });
+
+  await command.parse();
+}
+
+function getOutputFormat(
+  options: {
+    json?: true;
+    csv?: true;
+    xlsx?: true;
+  },
+): OutputFormat {
+  if (options.json) return "json";
+  if (options.csv) return "csv";
+  if (options.xlsx) return "xlsx";
+  return "table";
+}
+
+try {
+  await main();
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Błąd: ${message}`);
+  Deno.exit(1);
+}
