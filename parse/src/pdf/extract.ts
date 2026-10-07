@@ -1,17 +1,17 @@
 import * as pdfjsLib from "pdfjs-dist";
 
-export interface PdfPage {
+export interface PdfPageText {
   pageNumber: number;
   text: string;
 }
 
-export async function extractPdfText(data: Uint8Array): Promise<PdfPage[]> {
+export async function extractPdfText(data: Uint8Array): Promise<PdfPageText[]> {
   const document = await pdfjsLib.getDocument({
     data,
     useSystemFonts: true,
   }).promise;
 
-  const pages: PdfPage[] = [];
+  const pages: PdfPageText[] = [];
 
   for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber++) {
     const page = await document.getPage(pageNumber);
