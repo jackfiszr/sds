@@ -14,6 +14,6 @@
     "pdfjs-dist": "npm:pdfjs-dist@^6.4.299"
   },
   "tasks": {
-    "test": "deno test --allow-read --allow-env"
+    "test": "deno test --allow-read --allow-env --allow-write"
   }
 }
