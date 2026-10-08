@@ -8,7 +8,7 @@ export function renderTable(results: SdsResult[]): string {
       "Plik",
       "Nazwa handlowa",
       "Kod produktu",
-      "Data pierwszego wydania",
+      "Pierwsze wydanie",
       "Aktualizacja",
       "Wersja",
     ])
@@ -22,6 +22,7 @@ export function renderTable(results: SdsResult[]): string {
         result.document.revision,
       ]),
     )
-    .maxColWidth([35, 40, 25, 22, 18, 12])
+    .border(true)
+    .maxColWidth([35, 45, 25, 18, 18, 10])
     .toString();
 }
