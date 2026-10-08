@@ -12,14 +12,19 @@ Deno or other TypeScript projects.
 Install the `sdsparse` command globally:
 
 ```bash
-deno install -gAr jsr:@sds/parse/cli
+deno install -gRWEn sdsparse jsr:@sds/parse/cli
 ```
 
-After installation:
+This installs the package as the `sdsparse` command.
+
+To update an existing installation to the latest published version:
 
 ```bash
-sdsparse
+deno install -gRWErfn sdsparse jsr:@sds/parse/cli
 ```
+
+The `-r` flag reloads the cached source and `-f` overwrites the existing
+installation.
 
 Check the installed version:
 
