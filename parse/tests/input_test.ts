@@ -2,7 +2,7 @@ import { assertEquals, assertRejects } from "@std/assert";
 import { join } from "@std/path";
 import { getPdfInputs } from "../src/input.ts";
 
-Deno.test("znajduje pliki PDF w katalogu", async () => {
+Deno.test("finds PDF files in a directory", async () => {
   const directory = await Deno.makeTempDir();
 
   try {
@@ -21,7 +21,7 @@ Deno.test("znajduje pliki PDF w katalogu", async () => {
   }
 });
 
-Deno.test("zwraca pojedynczy plik PDF", async () => {
+Deno.test("returns a single PDF file", async () => {
   const directory = await Deno.makeTempDir();
   const file = join(directory, "product.pdf");
 
@@ -34,13 +34,13 @@ Deno.test("zwraca pojedynczy plik PDF", async () => {
   }
 });
 
-Deno.test("akceptuje URL do pliku PDF", async () => {
+Deno.test("accepts a URL to a PDF file", async () => {
   const url = "https://www.vw-group.pl/data/MSDS/G__052910A2.pdf";
 
   assertEquals(await getPdfInputs(url), [url]);
 });
 
-Deno.test("odrzuca brak plików PDF", async () => {
+Deno.test("rejects directories without PDF files", async () => {
   const directory = await Deno.makeTempDir();
 
   try {

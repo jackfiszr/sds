@@ -1,28 +1,28 @@
 import { assertEquals, assertThrows } from "@std/assert";
 import { resolveOutputPath } from "../src/output/path.ts";
 
-Deno.test("dodaje rozszerzenie CSV", () => {
+Deno.test("adds the CSV extension", () => {
   assertEquals(
     resolveOutputPath("csv", "wynik"),
     "wynik.csv",
   );
 });
 
-Deno.test("nie duplikuje rozszerzenia CSV", () => {
+Deno.test("does not duplicate the CSV extension", () => {
   assertEquals(
     resolveOutputPath("csv", "wynik.csv"),
     "wynik.csv",
   );
 });
 
-Deno.test("akceptuje rozszerzenie zapisane wielkimi literami", () => {
+Deno.test("accepts an uppercase extension", () => {
   assertEquals(
     resolveOutputPath("xlsx", "wynik.XLSX"),
     "wynik.XLSX",
   );
 });
 
-Deno.test("odrzuca niewłaściwe rozszerzenie", () => {
+Deno.test("rejects an invalid extension", () => {
   assertThrows(
     () => resolveOutputPath("csv", "wynik.xlsx"),
     Error,
@@ -30,28 +30,28 @@ Deno.test("odrzuca niewłaściwe rozszerzenie", () => {
   );
 });
 
-Deno.test("używa domyślnej nazwy CSV", () => {
+Deno.test("uses the default CSV filename", () => {
   assertEquals(
     resolveOutputPath("csv"),
     "sdsparse.csv",
   );
 });
 
-Deno.test("używa domyślnej nazwy XLSX", () => {
+Deno.test("uses the default XLSX filename", () => {
   assertEquals(
     resolveOutputPath("xlsx"),
     "sdsparse.xlsx",
   );
 });
 
-Deno.test("JSON domyślnie trafia na stdout", () => {
+Deno.test("writes JSON to stdout by default", () => {
   assertEquals(
     resolveOutputPath("json"),
     undefined,
   );
 });
 
-Deno.test("table domyślnie trafia na stdout", () => {
+Deno.test("writes the table to stdout by default", () => {
   assertEquals(
     resolveOutputPath("table"),
     undefined,
