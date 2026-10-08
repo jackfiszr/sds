@@ -13,7 +13,7 @@ export async function getPdfInputs(input: string): Promise<PdfInput[]> {
     stat = await Deno.stat(input);
   } catch (error) {
     if (error instanceof Deno.errors.NotFound) {
-      throw new Error(`Nie znaleziono ścieżki: ${input}`);
+      throw new Error(`Path not found: ${input}`);
     }
 
     throw error;
@@ -21,14 +21,14 @@ export async function getPdfInputs(input: string): Promise<PdfInput[]> {
 
   if (stat.isFile) {
     if (!isPdf(input)) {
-      throw new Error(`Plik nie jest plikiem PDF: ${input}`);
+      throw new Error(`File is not a PDF: ${input}`);
     }
 
     return [input];
   }
 
   if (!stat.isDirectory) {
-    throw new Error(`Nieobsługiwany typ wejścia: ${input}`);
+    throw new Error(`Unsupported input type: ${input}`);
   }
 
   const files: string[] = [];
@@ -43,7 +43,7 @@ export async function getPdfInputs(input: string): Promise<PdfInput[]> {
 
   if (files.length === 0) {
     throw new Error(
-      `W katalogu nie znaleziono plików PDF: ${input}`,
+      `No PDF files found in directory: ${input}`,
     );
   }
 
@@ -56,7 +56,7 @@ export async function readPdfInput(input: PdfInput): Promise<Uint8Array> {
 
     if (!response.ok) {
       throw new Error(
-        `Nie udało się pobrać PDF: ${response.status} ${response.statusText}`,
+        `Failed to download PDF: ${response.status} ${response.statusText}`,
       );
     }
 
@@ -64,7 +64,7 @@ export async function readPdfInput(input: PdfInput): Promise<Uint8Array> {
 
     if (contentType && !contentType.toLowerCase().includes("application/pdf")) {
       throw new Error(
-        `URL nie zwrócił pliku PDF (Content-Type: ${contentType}).`,
+        `URL did not return a PDF file (Content-Type: ${contentType}).`,
       );
     }
 

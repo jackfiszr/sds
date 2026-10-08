@@ -4,12 +4,12 @@ import type { SdsResult } from "./mod.ts";
 export function renderCsv(results: SdsResult[]): string {
   const rows = [
     [
-      "Plik",
-      "Nazwa handlowa",
-      "Kod produktu",
-      "Data pierwszego wydania",
-      "Aktualizacja",
-      "Wersja",
+      "File",
+      "Trade name",
+      "Product code",
+      "Initial issue date",
+      "Revision date",
+      "Revision",
     ],
     ...results.map((result) => [
       result.file,

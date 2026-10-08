@@ -26,7 +26,7 @@ Deno.test("odrzuca niewłaściwe rozszerzenie", () => {
   assertThrows(
     () => resolveOutputPath("csv", "wynik.xlsx"),
     Error,
-    "Nieprawidłowe rozszerzenie",
+    "Invalid output file extension",
   );
 });
 

@@ -29,7 +29,7 @@ export interface SdsData {
  */
 export function parseSds(pages: PdfPageText[]): SdsData {
   if (pages.length === 0) {
-    throw new Error("Dokument SDS nie zawiera żadnych stron.");
+    throw new Error("The SDS document contains no pages.");
   }
 
   const text = pages[0].text;
@@ -56,23 +56,23 @@ export function parseSds(pages: PdfPageText[]): SdsData {
   );
 
   if (!nameMatch) {
-    throw new Error("Nie znaleziono nazwy handlowej produktu.");
+    throw new Error("Product trade name not found.");
   }
 
   if (!codeMatch) {
-    throw new Error("Nie znaleziono kodu produktu.");
+    throw new Error("Product code not found.");
   }
 
   if (!revisionMatch) {
-    throw new Error("Nie znaleziono wersji dokumentu.");
+    throw new Error("Document revision not found.");
   }
 
   if (!revisionDateMatch) {
-    throw new Error("Nie znaleziono daty aktualizacji dokumentu.");
+    throw new Error("Document revision date not found.");
   }
 
   if (!issueDateMatch) {
-    throw new Error("Nie znaleziono daty pierwszego wydania dokumentu.");
+    throw new Error("Initial issue date not found.");
   }
 
   const code = codeMatch[1].trim();

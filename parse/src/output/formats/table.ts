@@ -6,12 +6,12 @@ import type { SdsResult } from "./mod.ts";
 export function renderTable(results: SdsResult[]): string {
   return new Table()
     .header([
-      "Plik",
-      "Nazwa handlowa",
-      "Kod produktu",
-      "Pierwsze wydanie",
-      "Aktualizacja",
-      "Wersja",
+      "File",
+      "Trade name",
+      "Product code",
+      "Initial issue date",
+      "Revision date",
+      "Revision",
     ])
     .body(
       results.map((result) => [

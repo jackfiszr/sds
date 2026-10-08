@@ -21,21 +21,21 @@ async function main(): Promise<void> {
     )
     .option(
       "--csv",
-      "Write CSV output. Domyślna nazwa: sdsparse.csv.",
+      "Write CSV output. Default file: sdsparse.csv.",
       {
         conflicts: ["json", "xlsx"],
       },
     )
     .option(
       "--xlsx",
-      "Write XLSX output. Domyślna nazwa: sdsparse.xlsx.",
+      "Write XLSX output. Default file: sdsparse.xlsx.",
       {
         conflicts: ["json", "csv"],
       },
     )
     .option(
       "-o, --output <file:file>",
-      "Nazwa pliku wyjściowego. Rozszerzenie zostanie dodane automatycznie.",
+      "Output file. The extension is added automatically.",
     )
     .arguments("[input:file]")
     .action(async (options, input) => {
@@ -46,7 +46,7 @@ async function main(): Promise<void> {
 
       for (const input of inputs) {
         try {
-          console.error(`Parsowanie: ${input}`);
+          console.error(`Parsing: ${input}`);
 
           const pages = await extractPdfText(await readPdfInput(input));
           const sds = parseSds(pages);
@@ -60,13 +60,13 @@ async function main(): Promise<void> {
             ? error.message
             : String(error);
 
-          console.error(`Błąd: ${input}: ${message}`);
+          console.error(`Error: ${input}: ${message}`);
         }
       }
 
       if (results.length === 0) {
         throw new Error(
-          "Nie udało się sparsować żadnego pliku PDF.",
+          "Failed to parse any PDF files.",
         );
       }
 
@@ -99,6 +99,6 @@ try {
   await main();
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
-  console.error(`Błąd: ${message}`);
+  console.error(`Error: ${message}`);
   Deno.exit(1);
 }

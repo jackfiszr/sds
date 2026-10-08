@@ -15,16 +15,16 @@ export async function writeXlsx(
   const worksheet = workbook.addWorksheet("SDS");
 
   worksheet.columns = [
-    { header: "Plik", key: "file", width: 40 },
-    { header: "Nazwa handlowa", key: "name", width: 45 },
-    { header: "Kod produktu", key: "code", width: 25 },
+    { header: "File", key: "file", width: 40 },
+    { header: "Trade name", key: "name", width: 45 },
+    { header: "Product code", key: "code", width: 25 },
     {
-      header: "Data pierwszego wydania",
+      header: "Initial issue date",
       key: "issueDate",
       width: 22,
     },
-    { header: "Aktualizacja", key: "revisionDate", width: 18 },
-    { header: "Wersja", key: "revision", width: 12 },
+    { header: "Revision date", key: "revisionDate", width: 18 },
+    { header: "Revision", key: "revision", width: 12 },
   ];
 
   for (const result of results) {

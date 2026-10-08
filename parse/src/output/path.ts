@@ -34,7 +34,7 @@ export function resolveOutputPath(
 
   if (currentExtension.toLowerCase() !== extension) {
     throw new Error(
-      `Nieprawidłowe rozszerzenie pliku wyjściowego dla formatu ${format}: ${currentExtension}. Oczekiwano ${extension}.`,
+      `Invalid output file extension for format ${format}: ${currentExtension}. Expected ${extension}.`,
     );
   }
 

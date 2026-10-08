@@ -22,11 +22,11 @@ export async function writeOutput(
 
   if (format === "xlsx") {
     if (!outputPath) {
-      throw new Error("Nie określono pliku wyjściowego XLSX.");
+      throw new Error("No XLSX output file was specified.");
     }
 
     await writeXlsx(results, outputPath);
-    console.error(`Zapisano wynik do: ${outputPath}`);
+    console.error(`Output saved to: ${outputPath}`);
     return;
   }
 
@@ -38,7 +38,7 @@ export async function writeOutput(
 
   if (outputPath) {
     await Deno.writeTextFile(outputPath, `${content}\n`);
-    console.error(`Zapisano wynik do: ${outputPath}`);
+    console.error(`Output saved to: ${outputPath}`);
     return;
   }
 

@@ -47,7 +47,7 @@ Deno.test("odrzuca brak plików PDF", async () => {
     await assertRejects(
       () => getPdfInputs(directory),
       Error,
-      "nie znaleziono plików PDF",
+      "No PDF files found",
     );
   } finally {
     await Deno.remove(directory, { recursive: true });
