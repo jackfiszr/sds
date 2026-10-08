@@ -36,7 +36,7 @@ export function parseSds(pages: PdfPageText[]): SdsData {
   const exactText = pages[0].exactText;
 
   const nameMatch = text.match(
-    /Nazwa handlowa\s*:\s*([\s\S]*?)(?=\n\s*Kod produktu\s*:)/,
+    /(?:Nazwa handlowa|Nazwa produktu)\s*:\s*([\s\S]*?)(?=\n\s*Kod produktu\s*:)/,
   );
 
   const codeMatch = text.match(
@@ -44,15 +44,15 @@ export function parseSds(pages: PdfPageText[]): SdsData {
   );
 
   const revisionMatch = text.match(
-    /Wersja\s+(\d+(?:\.\d+)+)/,
+    /Wersja:?\s+(\d+(?:\.\d+)+)/,
   );
 
   const revisionDateMatch = text.match(
-    /Aktualizacja\s*:\s*(\d{2}\.\d{2}\.\d{4})/,
+    /(?:Aktualizacja|Data aktualizacji)\s*:\s*(\d{2}\.\d{2}\.\d{4})/,
   );
 
   const issueDateMatch = text.match(
-    /Data pierwszego wydania\s*:\s*(\d{2}\.\d{2}\.\d{4})/,
+    /(?:Data pierwszego wydania|Data wydania)\s*:\s*(\d{2}\.\d{2}\.\d{4})/,
   );
 
   if (!nameMatch) {
