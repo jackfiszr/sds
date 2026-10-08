@@ -5,6 +5,14 @@ import { writeXlsx } from "./formats/xlsx.ts";
 import type { OutputFormat, SdsResult } from "./formats/mod.ts";
 import { resolveOutputPath } from "./path.ts";
 
+/**
+ * Renders results in the selected format and writes them to the appropriate
+ * destination.
+ *
+ * @param results Parsed SDS records to output.
+ * @param format Output format.
+ * @param output Optional destination path.
+ */
 export async function writeOutput(
   results: SdsResult[],
   format: OutputFormat,

@@ -1,5 +1,15 @@
 import { join } from "@std/path";
 
+/**
+ * Finds PDF files at the given path.
+ *
+ * A file path must point to a PDF. A directory is searched non-recursively, and
+ * the returned paths are sorted alphabetically.
+ *
+ * @param input Path to a PDF file or directory.
+ * @returns Matching PDF paths.
+ * @throws If the path does not exist, is unsupported, or contains no PDFs.
+ */
 export async function getPdfFiles(input: string): Promise<string[]> {
   let stat: Deno.FileInfo;
 
@@ -44,6 +54,7 @@ export async function getPdfFiles(input: string): Promise<string[]> {
   return files;
 }
 
+/** Checks whether a path has a PDF file extension, ignoring letter case. */
 function isPdf(path: string): boolean {
   return path.toLowerCase().endsWith(".pdf");
 }

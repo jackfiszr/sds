@@ -10,6 +10,7 @@ import {
 } from "./src/output/formats/mod.ts";
 import { writeOutput } from "./src/output/write.ts";
 
+/** Parses the command-line arguments and processes the requested PDF input. */
 async function main(): Promise<void> {
   const command = new Command()
     .name("sdsparse")
@@ -79,6 +80,12 @@ async function main(): Promise<void> {
   await command.parse();
 }
 
+/**
+ * Selects the output format requested by the CLI options.
+ *
+ * @param options Parsed output-format flags.
+ * @returns The selected format, or the terminal table format by default.
+ */
 function getOutputFormat(
   options: {
     json?: true;

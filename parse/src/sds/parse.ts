@@ -1,17 +1,32 @@
 import type { PdfPageText } from "../pdf/extract.ts";
 
+/** Product and document fields parsed from a Safety Data Sheet. */
 export interface SdsData {
+  /** Product identity fields. */
   product: {
+    /** Commercial product name. */
     name: string;
+    /** Product code, retaining its source spacing when available. */
     code: string;
   };
+  /** SDS issue and revision metadata. */
   document: {
+    /** Initial issue date in ISO `YYYY-MM-DD` format. */
     issueDate: string;
+    /** Latest revision date in ISO `YYYY-MM-DD` format. */
     revisionDate: string;
+    /** Document revision identifier. */
     revision: string;
   };
 }
 
+/**
+ * Parses product and revision metadata from the first page of an SDS.
+ *
+ * @param pages Text extracted from the SDS pages.
+ * @returns Parsed product and document metadata.
+ * @throws If the document has no pages or a required field is missing.
+ */
 export function parseSds(pages: PdfPageText[]): SdsData {
   if (pages.length === 0) {
     throw new Error("Dokument SDS nie zawiera żadnych stron.");
@@ -75,12 +90,20 @@ export function parseSds(pages: PdfPageText[]): SdsData {
   };
 }
 
+/** Converts a dotted `DD.MM.YYYY` date to ISO `YYYY-MM-DD` format. */
 function parseDate(value: string): string {
   const [day, month, year] = value.split(".");
 
   return `${year}-${month}-${day}`;
 }
 
+/**
+ * Finds a value in extracted text while retaining its exact source spacing.
+ *
+ * @param exactText Page text reconstructed from PDF text operators.
+ * @param value Whitespace-normalized text value to locate.
+ * @returns The matching source text, or `undefined` if it cannot be located.
+ */
 function findExactSpacing(
   exactText: string,
   value: string,
@@ -95,6 +118,7 @@ function findExactSpacing(
   return exactText.match(new RegExp(pattern))?.[0];
 }
 
+/** Escapes regular-expression metacharacters in a literal string. */
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

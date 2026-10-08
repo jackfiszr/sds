@@ -2,6 +2,7 @@ import { basename } from "@std/path";
 import { Table } from "@cliffy/table";
 import type { SdsResult } from "./mod.ts";
 
+/** Renders SDS results as a formatted terminal table. */
 export function renderTable(results: SdsResult[]): string {
   return new Table()
     .header([

@@ -1,6 +1,12 @@
 import ExcelJS from "exceljs";
 import type { SdsResult } from "./mod.ts";
 
+/**
+ * Writes SDS results to an XLSX workbook.
+ *
+ * @param results Parsed SDS records to write.
+ * @param outputPath Destination workbook path.
+ */
 export async function writeXlsx(
   results: SdsResult[],
   outputPath: string,
