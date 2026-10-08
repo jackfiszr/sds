@@ -1,6 +1,6 @@
 import { assertEquals, assertRejects } from "@std/assert";
-import { getPdfFiles } from "../src/input.ts";
 import { join } from "@std/path";
+import { getPdfInputs } from "../src/input.ts";
 
 Deno.test("znajduje pliki PDF w katalogu", async () => {
   const directory = await Deno.makeTempDir();
@@ -10,7 +10,7 @@ Deno.test("znajduje pliki PDF w katalogu", async () => {
     await Deno.writeTextFile(join(directory, "a.PDF"), "");
     await Deno.writeTextFile(join(directory, "not-pdf.txt"), "");
 
-    const files = await getPdfFiles(directory);
+    const files = await getPdfInputs(directory);
 
     assertEquals(files, [
       join(directory, "a.PDF"),
@@ -28,10 +28,16 @@ Deno.test("zwraca pojedynczy plik PDF", async () => {
   try {
     await Deno.writeTextFile(file, "");
 
-    assertEquals(await getPdfFiles(file), [file]);
+    assertEquals(await getPdfInputs(file), [file]);
   } finally {
     await Deno.remove(directory, { recursive: true });
   }
+});
+
+Deno.test("akceptuje URL do pliku PDF", async () => {
+  const url = "https://www.vw-group.pl/data/MSDS/G__052910A2.pdf";
+
+  assertEquals(await getPdfInputs(url), [url]);
 });
 
 Deno.test("odrzuca brak plików PDF", async () => {
@@ -39,7 +45,7 @@ Deno.test("odrzuca brak plików PDF", async () => {
 
   try {
     await assertRejects(
-      () => getPdfFiles(directory),
+      () => getPdfInputs(directory),
       Error,
       "nie znaleziono plików PDF",
     );

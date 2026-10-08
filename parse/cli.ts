@@ -2,12 +2,8 @@ import sdsparse from "./deno.json" with { type: "json" };
 import { Command } from "@cliffy/command";
 import { extractPdfText } from "./src/pdf/extract.ts";
 import { parseSds } from "./src/sds/parse.ts";
-import { getPdfFiles } from "./src/input.ts";
-import {
-  OUTPUT_FORMATS,
-  type OutputFormat,
-  type SdsResult,
-} from "./src/output/formats/mod.ts";
+import { getPdfInputs, readPdfInput } from "./src/input.ts";
+import type { OutputFormat, SdsResult } from "./src/output/formats/mod.ts";
 import { writeOutput } from "./src/output/write.ts";
 
 /** Parses the command-line arguments and processes the requested PDF input. */
@@ -45,18 +41,18 @@ async function main(): Promise<void> {
     .action(async (options, input) => {
       const inputPath = input ?? ".";
       const format = getOutputFormat(options);
-      const files = await getPdfFiles(inputPath);
+      const inputs = await getPdfInputs(inputPath);
       const results: SdsResult[] = [];
 
-      for (const file of files) {
+      for (const input of inputs) {
         try {
-          console.error(`Parsowanie: ${file}`);
+          console.error(`Parsowanie: ${input}`);
 
-          const pages = await extractPdfText(await Deno.readFile(file));
+          const pages = await extractPdfText(await readPdfInput(input));
           const sds = parseSds(pages);
 
           results.push({
-            file,
+            file: input,
             ...sds,
           });
         } catch (error) {
@@ -64,7 +60,7 @@ async function main(): Promise<void> {
             ? error.message
             : String(error);
 
-          console.error(`Błąd: ${file}: ${message}`);
+          console.error(`Błąd: ${input}: ${message}`);
         }
       }
 

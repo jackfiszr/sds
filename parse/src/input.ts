@@ -1,16 +1,12 @@
 import { join } from "@std/path";
 
-/**
- * Finds PDF files at the given path.
- *
- * A file path must point to a PDF. A directory is searched non-recursively, and
- * the returned paths are sorted alphabetically.
- *
- * @param input Path to a PDF file or directory.
- * @returns Matching PDF paths.
- * @throws If the path does not exist, is unsupported, or contains no PDFs.
- */
-export async function getPdfFiles(input: string): Promise<string[]> {
+export type PdfInput = string;
+
+export async function getPdfInputs(input: string): Promise<PdfInput[]> {
+  if (isUrl(input)) {
+    return [input];
+  }
+
   let stat: Deno.FileInfo;
 
   try {
@@ -54,7 +50,39 @@ export async function getPdfFiles(input: string): Promise<string[]> {
   return files;
 }
 
-/** Checks whether a path has a PDF file extension, ignoring letter case. */
+export async function readPdfInput(input: PdfInput): Promise<Uint8Array> {
+  if (isUrl(input)) {
+    const response = await fetch(input);
+
+    if (!response.ok) {
+      throw new Error(
+        `Nie udało się pobrać PDF: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const contentType = response.headers.get("content-type");
+
+    if (contentType && !contentType.toLowerCase().includes("application/pdf")) {
+      throw new Error(
+        `URL nie zwrócił pliku PDF (Content-Type: ${contentType}).`,
+      );
+    }
+
+    return new Uint8Array(await response.arrayBuffer());
+  }
+
+  return await Deno.readFile(input);
+}
+
+function isUrl(input: string): boolean {
+  try {
+    const url = new URL(input);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 function isPdf(path: string): boolean {
   return path.toLowerCase().endsWith(".pdf");
 }

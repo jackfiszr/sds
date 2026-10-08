@@ -12,7 +12,7 @@ Deno or other TypeScript projects.
 Install the `sdsparse` command globally:
 
 ```bash
-deno install -gRWEn sdsparse jsr:@sds/parse/cli
+deno install -gRWENn sdsparse jsr:@sds/parse/cli
 ```
 
 This installs the package as the `sdsparse` command.
@@ -20,7 +20,7 @@ This installs the package as the `sdsparse` command.
 To update an existing installation to the latest published version:
 
 ```bash
-deno install -gRWErfn sdsparse jsr:@sds/parse/cli
+deno install -gRWENrfn sdsparse jsr:@sds/parse/cli
 ```
 
 The `-r` flag reloads the cached source and `-f` overwrites the existing
@@ -60,6 +60,9 @@ import { extractPdfText } from "@sds/parse/pdf";
 
 ## Command-line usage
 
+The input can be a local PDF file, a directory containing PDF files, or an
+HTTP/HTTPS URL pointing to a PDF.
+
 ### Parse the current directory
 
 ```bash
@@ -85,6 +88,22 @@ sdsparse ./sds
 ```
 
 All PDF files located directly in the specified directory are processed.
+
+### Parse an online PDF
+
+A PDF can also be specified by its HTTP or HTTPS URL.
+
+For example, the repository contains a sample PDF at
+[parse/fixtures/example.pdf](https://github.com/jackfiszr/sds/blob/main/parse/fixtures/example.pdf).
+
+The corresponding raw file can be passed directly to `sdsparse`:
+
+```bash
+sdsparse https://raw.githubusercontent.com/jackfiszr/sds/main/parse/fixtures/example.pdf
+```
+
+The PDF is downloaded and processed directly. It does not need to be saved
+locally first.
 
 ## Output formats
 
@@ -196,7 +215,7 @@ Usage:
   sdsparse [input] [options]
 
 Arguments:
-  [input]  PDF file or directory containing PDF files.
+  [input]  PDF file, directory containing PDF files, or HTTP/HTTPS URL.
            Default: current directory.
 
 Options:
@@ -265,13 +284,13 @@ The command exits with an error when no PDF can be parsed successfully.
 Clone the repository and run the CLI directly:
 
 ```bash
-deno run --allow-read --allow-write cli.ts
+deno run --allow-read --allow-write --allow-env cli.ts
 ```
 
 Run tests:
 
 ```bash
-deno test
+deno task test
 ```
 
 Format source files:
