@@ -2,20 +2,58 @@
 
 Parser Safety Data Sheets (SDS) written in TypeScript for Deno.
 
-## Features
+The package can be used both as a command-line application and as a library in
+Deno or other TypeScript projects.
 
-* Extract text from SDS PDF files.
-* Parse basic SDS metadata.
-* Process a single PDF or multiple PDFs from a directory.
-* Generate output as:
+## Installation
 
-  * terminal table,
-  * JSON,
-  * CSV,
-  * XLSX.
-* Continue processing when an individual PDF cannot be parsed.
+### Command-line application
 
-## Usage
+Install the `sdsparse` command globally:
+
+```bash
+deno install -gAr jsr:@sds/parse/cli
+```
+
+After installation:
+
+```bash
+sdsparse
+```
+
+Check the installed version:
+
+```bash
+sdsparse --version
+```
+
+Show available options:
+
+```bash
+sdsparse --help
+```
+
+### Library
+
+Add the package to a Deno project:
+
+```bash
+deno add jsr:@sds/parse
+```
+
+Then import the parser from your TypeScript code:
+
+```ts
+import { parseSds } from "@sds/parse";
+```
+
+The PDF text extraction functionality can also be used independently:
+
+```ts
+import { extractPdfText } from "@sds/parse/pdf";
+```
+
+## Command-line usage
 
 ### Parse the current directory
 
@@ -26,6 +64,8 @@ sdsparse
 When no input is specified, the current directory is used.
 
 All PDF files located directly in the current directory are processed.
+
+Subdirectories are not searched recursively.
 
 ### Parse a single PDF
 
@@ -40,8 +80,6 @@ sdsparse ./sds
 ```
 
 All PDF files located directly in the specified directory are processed.
-
-Subdirectories are not searched recursively.
 
 ## Output formats
 
@@ -95,8 +133,6 @@ This creates:
 result.csv
 ```
 
-The `.csv` extension may also be specified explicitly.
-
 ### XLSX
 
 ```bash
@@ -131,22 +167,15 @@ The appropriate extension is added automatically:
 --json  → .json
 --csv   → .csv
 --xlsx  → .xlsx
---output with table → .txt
 ```
 
-An existing extension is preserved when it matches the selected output format.
+An existing matching extension is preserved.
 
-For example:
+For example, both commands produce `result.csv`:
 
 ```bash
 sdsparse --csv --output result
 sdsparse --csv --output result.csv
-```
-
-Both produce:
-
-```text
-result.csv
 ```
 
 An incompatible extension is rejected:
@@ -155,7 +184,7 @@ An incompatible extension is rejected:
 sdsparse --csv --output result.xlsx
 ```
 
-## Command-line interface
+## Command-line options
 
 ```text
 Usage:
@@ -179,19 +208,56 @@ Options:
 
 The output format options are mutually exclusive.
 
-If no format option is specified, a table is shown in the terminal.
+When no output format is specified, a table is displayed in the terminal.
+
+## Using the library
+
+The package exposes the SDS parser independently of the command-line interface.
+
+For example:
+
+```ts
+import { extractPdfText, parseSds } from "@sds/parse";
+
+const data = await Deno.readFile("product.pdf");
+const pages = await extractPdfText(data);
+const sds = parseSds(pages);
+
+console.log(sds);
+```
+
+The parser returns structured SDS data:
+
+```ts
+{
+  product: {
+    name: string;
+    code: string;
+  }
+  document: {
+    issueDate: string;
+    revisionDate: string;
+    revision: string;
+  }
+}
+```
+
+The CLI is built on top of the same library functionality, so the parsing logic
+can be integrated into other Deno applications without invoking the `sdsparse`
+command.
 
 ## Processing multiple files
 
 When a directory is used as input, each PDF is processed independently.
 
-If an individual PDF cannot be parsed, an error is reported and processing continues with the remaining files.
+If an individual PDF cannot be parsed, an error is reported and processing
+continues with the remaining files.
 
 The command exits with an error when no PDF can be parsed successfully.
 
 ## Development
 
-Run the CLI:
+Clone the repository and run the CLI directly:
 
 ```bash
 deno run --allow-read --allow-write cli.ts
