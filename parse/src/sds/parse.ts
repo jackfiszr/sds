@@ -20,6 +20,71 @@ export interface SdsData {
   };
 }
 
+/** Field labels grouped by language. */
+const labels = {
+  name: [
+    // Polski
+    "Nazwa handlowa",
+    "Nazwa produktu",
+    // English
+    "Trade name",
+    "Product name",
+    // Deutsch
+    "Handelsname",
+    "Produktname",
+  ],
+  code: [
+    // Polski
+    "Kod produktu",
+    // English
+    "Product code",
+    // Deutsch
+    "Produktnummer",
+    "Produktcode",
+  ],
+  revision: [
+    // Polski
+    "Wersja",
+    // English
+    "Version",
+    // Deutsch
+    "Version",
+  ],
+  revisionDate: [
+    // Polski
+    "Aktualizacja",
+    "Data aktualizacji",
+    // English
+    "Revision Date",
+    "Revision date",
+    // Deutsch
+    "Überarbeitet am",
+    "Überarbeitungsdatum",
+  ],
+  issueDate: [
+    // Polski
+    "Data pierwszego wydania",
+    "Data wydania",
+    // English
+    "Date of first issue",
+    "Issue date",
+    // Deutsch
+    "Datum der ersten Ausgabe",
+    "Ausgabedatum",
+  ],
+};
+
+/** Builds a regular-expression alternative from literal labels. */
+function labelPattern(values: string[]): string {
+  return values
+    .toSorted((a, b) => b.length - a.length)
+    .map(escapeRegExp)
+    .join("|");
+}
+
+/** Matches any supported date format: DD.MM.YYYY or M/D/YYYY. */
+const datePattern = String.raw`(\d{1,2}[./]\d{1,2}[./]\d{4})`;
+
 /**
  * Parses product and revision metadata from the first page of an SDS.
  *
@@ -36,23 +101,40 @@ export function parseSds(pages: PdfPageText[]): SdsData {
   const exactText = pages[0].exactText;
 
   const nameMatch = text.match(
-    /(?:Nazwa handlowa|Nazwa produktu)\s*:\s*([\s\S]*?)(?=\n\s*Kod produktu\s*:)/,
+    new RegExp(
+      String.raw`(?:${labelPattern(labels.name)})\s*:\s*([\s\S]*?)(?=\n\s*(?:${
+        labelPattern(labels.code)
+      })\s*:)`,
+      "i",
+    ),
   );
 
   const codeMatch = text.match(
-    /Kod produktu\s*:\s*([^\r\n]+)/,
+    new RegExp(
+      String.raw`(?:${labelPattern(labels.code)})\s*:\s*([^\r\n]+)`,
+      "i",
+    ),
   );
 
   const revisionMatch = text.match(
-    /Wersja:?\s+(\d+(?:\.\d+)+)/,
+    new RegExp(
+      String.raw`(?:${labelPattern(labels.revision)})\s*:?\s+(\d+(?:\.\d+)+)`,
+      "i",
+    ),
   );
 
   const revisionDateMatch = text.match(
-    /(?:Aktualizacja|Data aktualizacji)\s*:\s*(\d{2}\.\d{2}\.\d{4})/,
+    new RegExp(
+      String.raw`(?:${labelPattern(labels.revisionDate)})\s*:\s*${datePattern}`,
+      "i",
+    ),
   );
 
   const issueDateMatch = text.match(
-    /(?:Data pierwszego wydania|Data wydania)\s*:\s*(\d{2}\.\d{2}\.\d{4})/,
+    new RegExp(
+      String.raw`(?:${labelPattern(labels.issueDate)})\s*:\s*${datePattern}`,
+      "i",
+    ),
   );
 
   if (!nameMatch) {
@@ -90,11 +172,17 @@ export function parseSds(pages: PdfPageText[]): SdsData {
   };
 }
 
-/** Converts a dotted `DD.MM.YYYY` date to ISO `YYYY-MM-DD` format. */
+/** Converts a supported date format to ISO `YYYY-MM-DD`. */
 function parseDate(value: string): string {
-  const [day, month, year] = value.split(".");
+  const parts = value.split(/[./]/);
+  const [first, second, year] = parts;
 
-  return `${year}-${month}-${day}`;
+  // English dates may use M/D/YYYY; other formats use DD.MM.YYYY.
+  if (value.includes("/")) {
+    return `${year}-${second.padStart(2, "0")}-${first.padStart(2, "0")}`;
+  }
+
+  return `${year}-${second.padStart(2, "0")}-${first.padStart(2, "0")}`;
 }
 
 /**
