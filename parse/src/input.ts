@@ -61,14 +61,17 @@ export async function readPdfInput(input: PdfInput): Promise<Uint8Array> {
     }
 
     const contentType = response.headers.get("content-type");
+    const bytes = new Uint8Array(await response.arrayBuffer());
 
-    if (contentType && !contentType.toLowerCase().includes("application/pdf")) {
+    if (!isPdfContent(bytes)) {
       throw new Error(
-        `URL did not return a PDF file (Content-Type: ${contentType}).`,
+        `URL did not return a PDF file (Content-Type: ${
+          contentType ?? "missing"
+        }).`,
       );
     }
 
-    return new Uint8Array(await response.arrayBuffer());
+    return bytes;
   }
 
   return await Deno.readFile(input);
@@ -85,4 +88,15 @@ function isUrl(input: string): boolean {
 
 function isPdf(path: string): boolean {
   return path.toLowerCase().endsWith(".pdf");
+}
+
+function isPdfContent(bytes: Uint8Array): boolean {
+  return (
+    bytes.length >= 5 &&
+    bytes[0] === 0x25 && // %
+    bytes[1] === 0x50 && // P
+    bytes[2] === 0x44 && // D
+    bytes[3] === 0x46 && // F
+    bytes[4] === 0x2d // -
+  );
 }
