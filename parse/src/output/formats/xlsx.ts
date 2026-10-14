@@ -18,13 +18,14 @@ export async function writeXlsx(
     { header: "File", key: "file", width: 40 },
     { header: "Trade name", key: "name", width: 45 },
     { header: "Product code", key: "code", width: 25 },
+    { header: "UFI", key: "ufi", width: 21 },
     {
       header: "Initial issue date",
       key: "issueDate",
-      width: 22,
+      width: 16,
     },
-    { header: "Revision date", key: "revisionDate", width: 18 },
-    { header: "Revision", key: "revision", width: 12 },
+    { header: "Revision date", key: "revisionDate", width: 13 },
+    { header: "Revision", key: "revision", width: 9 },
   ];
 
   for (const result of results) {
@@ -32,6 +33,7 @@ export async function writeXlsx(
       file: result.file,
       name: result.product.name,
       code: result.product.code,
+      ufi: result.product.ufi ?? "",
       issueDate: result.document.issueDate,
       revisionDate: result.document.revisionDate,
       revision: result.document.revision,

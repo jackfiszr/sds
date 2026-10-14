@@ -19,6 +19,8 @@ export interface SdsResult {
     name: string;
     /** Product code. */
     code: string;
+    /** Unique Formula Identifier, if present. */
+    ufi?: string;
   };
   /** SDS issue and revision metadata, with dates in ISO format. */
   document: {
