@@ -8,6 +8,8 @@ export interface SdsData {
     name: string;
     /** Product code, retaining its source spacing when available. */
     code: string;
+    /** Unique Formula Identifier, if present. */
+    ufi?: string;
   };
   /** SDS issue and revision metadata. */
   document: {
@@ -100,6 +102,11 @@ export function parseSds(pages: PdfPageText[]): SdsData {
   const text = pages[0].text;
   const exactText = pages[0].exactText;
 
+  const ufiMatch = pages
+    .map((page) => page.text)
+    .join("\n")
+    .match(/\b([0-9AC-HJ-KM-NP-Y]{4}(?:-[0-9AC-HJ-KM-NP-Y]{4}){3})\b/i);
+
   const nameMatch = text.match(
     new RegExp(
       String.raw`(?:${labelPattern(labels.name)})\s*:\s*([\s\S]*?)(?=\n\s*(?:${
@@ -163,6 +170,7 @@ export function parseSds(pages: PdfPageText[]): SdsData {
     product: {
       name: nameMatch[1].replace(/\s+/g, " ").trim(),
       code: findExactSpacing(exactText, code) ?? code,
+      ...(ufiMatch ? { ufi: ufiMatch[1].toUpperCase() } : {}),
     },
     document: {
       issueDate: parseDate(issueDateMatch[1]),
