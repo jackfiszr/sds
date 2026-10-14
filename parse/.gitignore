@@ -1,3 +1,8 @@
-*.xlsx
+# Generated and temporary files
 *.pdf
-!example*.pdf
+*.txt
+*.csv
+*.xlsx
+
+# Test fixtures
+!/parse/fixtures/example*.pdf
