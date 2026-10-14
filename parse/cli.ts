@@ -70,7 +70,7 @@ async function main(): Promise<void> {
         );
       }
 
-      await writeOutput(results, format);
+      await writeOutput(results, format, options.output);
     });
 
   await command.parse();
