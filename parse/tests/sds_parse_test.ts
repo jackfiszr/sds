@@ -22,3 +22,52 @@ Deno.test("parses SDS metadata", async () => {
     },
   });
 });
+
+function createPage(text: string, pageNumber = 1) {
+  return { pageNumber, text, exactText: text };
+}
+
+function createFirstPage(extraLine = "") {
+  return createPage(
+    [
+      "Nazwa handlowa: Example Product",
+      "Kod produktu: ABC123",
+      "Wersja: 4.3",
+      "Data aktualizacji: 23.06.2026",
+      "Data pierwszego wydania: 16.09.2020",
+      extraLine,
+    ].filter(Boolean).join("\n"),
+  );
+}
+
+Deno.test("extracts UFI without a label", () => {
+  const result = parseSds([
+    createFirstPage("Product identifier: 1K80-S0U9-9008-YX05"),
+  ]);
+
+  assertEquals(result.product.ufi, "1K80-S0U9-9008-YX05");
+});
+
+Deno.test("normalizes UFI to uppercase", () => {
+  const result = parseSds([
+    createFirstPage("1k80-s0u9-9008-yx05"),
+  ]);
+
+  assertEquals(result.product.ufi, "1K80-S0U9-9008-YX05");
+});
+
+Deno.test("parses SDS without UFI", () => {
+  const result = parseSds([createFirstPage()]);
+
+  assertEquals(result.product.name, "Example Product");
+  assertEquals("ufi" in result.product, false);
+});
+
+Deno.test("extracts UFI from a subsequent page", () => {
+  const result = parseSds([
+    createFirstPage(),
+    createPage("Additional information: 1K80-S0U9-9008-YX05", 2),
+  ]);
+
+  assertEquals(result.product.ufi, "1K80-S0U9-9008-YX05");
+});
